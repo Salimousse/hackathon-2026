@@ -3,7 +3,7 @@
 <head>
     <title>Informations Association</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Leaflet CSS & JS -->
+    <!-- importation de  Leaflet pour faire la carte OpenStreetMap-->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </head>
@@ -42,7 +42,14 @@
                 </div>
             </div>
 
-            
+            @if(isset($association['geo_point_2d']['lat']) && isset($association['geo_point_2d']['lon']))
+            <div class="mt-8">
+                <h3 class="font-bold text-lg mb-2 border-b pb-1">Localisation</h3>
+                <!-- Map Container -->
+                <div id="map" class="h-64 md:h-96 w-full rounded-lg shadow border z-0"></div>
+            </div>
+            @endif
+
         @else
             <div class="text-center py-10">
                 <h2 class="text-2xl font-bold text-red-600 mb-2">Association introuvable</h2>
@@ -50,10 +57,12 @@
             </div>
         @endif
     </div>
+ 
 
     <script>
+        // script pour faire fonctionner la carte 
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialisation de la carte (vue par défaut sur Paris)
+            // Initialisation de la carte par défaut sinon non fonctionnelle 
             var map = L.map('map').setView([46.603354, 1.888334], 5);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -61,26 +70,16 @@
                 attribution: '© OpenStreetMap'
             }).addTo(map);
 
-            // Récupération de l'adresse propre
-            var address = "{{ ($association['street_name_asso'] ?? '') . ' ' . ($association['pc_address_asso'] ?? '') . ' ' . ($association['city_address_asso'] ?? '') }}";
+           
+            // On récupère lat et lon depuis les données de l'association
+            var lat = "{{ $association['geo_point_2d']['lat'] ?? '' }}";
+            var lon = "{{ $association['geo_point_2d']['lon'] ?? '' }}";
             
-            if(address.trim() !== "") {
-                // Appel à l'API Nominatim pour géocoder l'adresse
-                fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(address))
-                    .then(response => response.json())
-                    .then(data => {
-                        if(data.length > 0) {
-                            var lat = data[0].lat;
-                            var lon = data[0].lon;
-                            
-                            // Mise à jour de la carte avec la position trouvée
-                            map.setView([lat, lon], 15);
-                            L.marker([lat, lon]).addTo(map)
-                                .bindPopup("<b>{{ $association['title'] ?? 'Association' }}</b><br>" + address)
-                                .openPopup();
-                        }
-                    })
-                    .catch(error => console.log('Erreur de géocodage:', error));
+            if (lat && lon) {
+                map.setView([lat, lon], 15);
+                L.marker([lat, lon]).addTo(map)
+                    .bindPopup("<b>{{ $association['title'] ?? 'Association' }}</b>")
+                    .openPopup();
             }
         });
     </script>
