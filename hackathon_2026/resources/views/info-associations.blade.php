@@ -11,6 +11,8 @@
     <div class="max-w-3xl mx-auto bg-white p-8 rounded shadow">
         <a href="{{ route('recherche.associations') }}" class="inline-block mb-6 text-blue-600 hover:text-blue-800 font-semibold">&larr; Retour à la recherche</a>
 
+
+        <!-- Vérification si l'association existe -->
         @if($association)
             <h1 class="text-3xl font-bold text-blue-600 mb-4">{{ $association['title'] ?? 'Nom inconnu' }}</h1>
             

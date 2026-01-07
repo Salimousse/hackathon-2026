@@ -24,8 +24,41 @@ class AssociationController extends Controller
             'offset' => $offset
         ];
 
+        // Construction de la clause WHERE avec plusieurs critères
+        $whereClauses = [];
+
+        // 1. Recherche par mot-clé (Titre ou Objet)
         if ($search) {
-            $params['where'] = "title like '%{$search}%'";
+            // On cherche dans le titre ou la description
+            $whereClauses[] = "(title like '%{$search}%' OR object like '%{$search}%')";
+        }
+
+        // 2. Filtre par Ville (si présent dans la requête)
+        if ($ville = $request->input('ville')) {
+            $whereClauses[] = "com_name_asso like '%{$ville}%'";
+        }
+
+        // 3. Filtre par Code Postal (si présent dans la requête)
+        if ($cp = $request->input('cp')) {
+            $whereClauses[] = "pc_address_asso like '{$cp}%'";
+        }
+
+        // 4. Filtre par géolocalisation (si lat/lon fournis)
+        $lat = $request->input('lat');
+        $lon = $request->input('lon');
+        
+        if ($lat && $lon) {
+            // Filtrer dans un rayon de 20km (20000 mètres)
+            $whereClauses[] = "distance(geo_point_2d, geom'POINT({$lon} {$lat})') < 20000";
+            // Trier par distance (les plus proches en premier)
+            $params['order_by'] = "distance(geo_point_2d, geom'POINT({$lon} {$lat})') ASC";
+        }
+
+        
+
+        // On assemble tous les filtres avec AND
+        if (count($whereClauses) > 0) {
+            $params['where'] = implode(' AND ', $whereClauses);
         }
 
         $url = $endpoint . '?' . http_build_query($params);
@@ -59,7 +92,6 @@ class AssociationController extends Controller
     {
         $endpoint = "https://hub.huwise.com/api/explore/v2.1/catalog/datasets/ref-france-association-repertoire-national/records";
         
-        // On cherche uniquement par 'id' car id_association n'est pas un champ valide dans ce dataset
         $params = [
             'where' => "id = '{$id}'",
             'limit' => 1
@@ -81,9 +113,22 @@ class AssociationController extends Controller
 
     public function list(Request $request)
     {
-        // Réutilise la logique de recherche sans requête spécifique pour lister par défaut
+        //fonction pour pagination 
         return $this->search($request);
     }
+
+
+    public function reinitialiserFiltres()
+    {
+        // Rediriger vers la page de recherche sans paramètres
+        return redirect()->route('recherche.associations');
+    }
+
+    public function geolocationSearch(Request $request)
+    {
+        // Fonction pour gérer la recherche par géolocalisation
+    }
+
 
 }
 

@@ -14,14 +14,17 @@
       type="text/css"
     />
 
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <!-- Styles -->
     <style>
       html,
       body {
         background-color: #fff;
-        color: #636b6f;
+        color: #000;
         font-family: "Raleway", sans-serif;
-        font-weight: 100;
+        font-weight: 400;
         height: 100vh;
         margin: 0;
       }
@@ -48,7 +51,7 @@
         font-size: 84px;
       }
       .links > a {
-        color: #636b6f;
+        color: black;
         padding: 0 25px;
         font-size: 12px;
         font-weight: 600;
@@ -67,6 +70,7 @@
       <div class="top-right links">
         @auth
         <a href="{{ url('/home') }}">Home</a>
+        <span>{{ Auth::user()->name }}</span>
         @else
         <a href="{{ route('login') }}">Login</a>
         <a href="{{ route('register') }}">Register</a>
