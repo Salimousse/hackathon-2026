@@ -43,16 +43,19 @@ class AssociationController extends Controller
             $whereClauses[] = "pc_address_asso like '{$cp}%'";
         }
 
-        // 4. Filtre par géolocalisation (si lat/lon fournis)
+        // 4. Filtre par géolocalisation 
         $lat = $request->input('lat');
         $lon = $request->input('lon');
         
         if ($lat && $lon) {
-            // Filtrer dans un rayon de 20km (20000 mètres)
-            $whereClauses[] = "distance(geo_point_2d, geom'POINT({$lon} {$lat})') < 20000";
-            // Trier par distance (les plus proches en premier)
-            $params['order_by'] = "distance(geo_point_2d, geom'POINT({$lon} {$lat})') ASC";
-        }
+    // Sécurité : On s'assure que ce sont des points et non des virgules
+    // et on force le type float pour la sécurité 
+    $lat = number_format((float)$lat, 6, '.', '');
+    $lon = number_format((float)$lon, 6, '.', '');
+    $whereClauses[] = "distance(geo_point_2d, geom'POINT($lon $lat)', 20km)";
+}
+
+
 
         
 
@@ -124,10 +127,7 @@ class AssociationController extends Controller
         return redirect()->route('recherche.associations');
     }
 
-    public function geolocationSearch(Request $request)
-    {
-        // Fonction pour gérer la recherche par géolocalisation
-    }
+    
 
 
 }

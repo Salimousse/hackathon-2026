@@ -6,17 +6,25 @@
     <!-- importation de  Leaflet pour faire la carte OpenStreetMap-->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+     <style>
+        body {
+            background-color: #fff;
+            color: black;
+            font-family: "Raleway", sans-serif;
+            font-weight: 100;
+        }
+    </style>
 </head>
 <body class="p-10 bg-gray-100">
     <div class="max-w-3xl mx-auto bg-white p-8 rounded shadow">
-        <a href="{{ route('recherche.associations') }}" class="inline-block mb-6 text-blue-600 hover:text-blue-800 font-semibold">&larr; Retour à la recherche</a>
+        <a href="{{ route('recherche.associations') }}" class="inline-block mb-6 text-black-600 hover:text-black-800 font-semibold">&larr; Retour à la recherche</a>
 
 
         <!-- Vérification si l'association existe -->
         @if($association)
-            <h1 class="text-3xl font-bold text-blue-600 mb-4">{{ $association['title'] ?? 'Nom inconnu' }}</h1>
+            <h1 class="text-3xl font-bold text-black-600 mb-4">{{ $association['title'] ?? 'Nom inconnu' }}</h1>
             
-            <div class="mb-6 p-4 bg-gray-50 rounded-lg border-l-4 border-blue-500">
+            <div class="mb-6 p-4 bg-gray-50 rounded-lg border-l-4 border-black-500">
                 <h3 class="font-bold text-lg mb-2 text-gray-800">Objet de l'association</h3>
                 <p class="text-gray-700 italic">
                     {{ $association['object'] ?? 'Pas de description disponible.' }}
