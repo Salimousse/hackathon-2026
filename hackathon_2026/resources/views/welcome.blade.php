@@ -15,7 +15,7 @@
                     id="query"
                     name="query" 
                     value="{{ request('query') }}" 
-                    placeholder="Nom ou objet de l'association..." 
+                    placeholder="Rechercher une association ..." 
                     class="w-full p-3 rounded border border-black-300 shadow-sm focus:ring-2 focus:ring-blue-500"
                 >
             </div>

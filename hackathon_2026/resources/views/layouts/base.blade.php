@@ -17,6 +17,9 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Livewire Styles -->
+    @livewireStyles
+
     <!-- Styles -->
     <style>
       html,
@@ -80,5 +83,8 @@
 
       <div class="content">@yield('content')</div>
     </div>
+
+    <!-- Livewire Scripts -->
+    @livewireScripts
   </body>
 </html>
