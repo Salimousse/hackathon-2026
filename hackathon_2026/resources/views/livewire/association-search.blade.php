@@ -34,9 +34,9 @@
             <div class="md:col-span-1 flex items-end">
                 <button 
                     type="button"
-                    onclick="getLocation()" 
+                    wire:click="$refresh"
                     class="w-full bg-black text-white px-6 py-3 rounded hover:bg-gray-800 font-bold transition">
-                    Autour de moi
+                    Rechercher
                 </button>
             </div>
         </div>
@@ -48,8 +48,8 @@
             Réinitialiser les filtres
         </button>
 
-        <div wire:loading class="text-blue-600 text-sm mt-2">
-            Recherche en cours...
+        <div wire:loading class="text-black text-sm mt-2 font-semibold">
+             Recherche en cours...
         </div>
     </div>
 
