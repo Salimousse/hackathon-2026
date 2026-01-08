@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Recherche Associations</title>
-    <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,500,600,700" rel="stylesheet" type="text/css">
     <script src="https://cdn.tailwindcss.com"></script>
     @livewireStyles
     <style>
@@ -12,7 +12,7 @@
             background-color: #fff;
             color: black;
             font-family: "Raleway", sans-serif;
-            font-weight: 100;
+            font-weight: 500;
         }
     </style>
 </head>

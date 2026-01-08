@@ -37,12 +37,16 @@
     <!-- Section Mes Associations -->
     <div class="bg-white p-6 rounded shadow mb-6">
         <h3 class="text-xl font-bold text-gray-900 mb-4">
-            🏢 Mes Associations ({{ $associations->count() }})
+             Mes Associations ({{ count($associations) }})
         </h3>
 
-        @if($associations->count() > 0)
+        @if(count($associations) > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @foreach($associations as $adhesion)
+                @foreach($associations as $item)
+                    @php
+                        $adhesion = $item['adhesion'];
+                        $info = $item['info'];
+                    @endphp
                     <div class="border rounded-lg p-4 bg-gray-50 hover:shadow-md transition">
                         <div class="flex justify-between items-start mb-2">
                             <div class="flex-1">

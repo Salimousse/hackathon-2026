@@ -11,7 +11,7 @@
             background-color: #fff;
             color: black;
             font-family: "Raleway", sans-serif;
-            font-weight: 100;
+            font-weight: 500;
         }
     </style>
 </head>

@@ -218,11 +218,13 @@ class AssociationController extends Controller
             return back()->with('error', 'Vous avez déjà demandé à rejoindre cette association.');
         }
 
+
+        // rajoute l'utilisateur dans la table membre asso 
         MembreAsso::create([
             'user_id' => Auth::id(),
             'association_id' => $id,
             'role' => 'membre',
-            'status' => 'accepted' // Acceptation automatique pour le moment
+            'status' => 'accepted' 
         ]);
 
         return back()->with('success', 'Vous avez rejoint l\'association avec succès!');

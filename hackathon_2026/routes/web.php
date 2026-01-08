@@ -15,9 +15,37 @@ Route::get('/dashboard', function () {
         ->orderBy('idCommentaire', 'desc')
         ->get();
     
-    $associations = \App\Models\MembreAsso::where('user_id', Auth::id())
+    $adhesions = \App\Models\MembreAsso::where('user_id', Auth::id())
         ->orderBy('created_at', 'desc')
         ->get();
+    
+    // Récupérer les infos des associations via l'API
+    $associations = [];
+    $client = new \GuzzleHttp\Client();
+    $endpoint = "https://hub.huwise.com/api/explore/v2.1/catalog/datasets/ref-france-association-repertoire-national/records";
+    
+    foreach ($adhesions as $adhesion) {
+        try {
+            $params = ['where' => "id = '{$adhesion->association_id}'", 'limit' => 1];
+            $response = $client->get($endpoint . '?' . http_build_query($params));
+            
+            if ($response->getStatusCode() == 200) {
+                $data = json_decode($response->getBody(), true);
+                if (isset($data['results'][0])) {
+                    $associations[] = [
+                        'adhesion' => $adhesion,
+                        'info' => $data['results'][0]
+                    ];
+                }
+            }
+        } catch (\Exception $e) {
+            // Si erreur, on garde juste l'adhesion sans infos
+            $associations[] = [
+                'adhesion' => $adhesion,
+                'info' => null
+            ];
+        }
+    }
     
     return view('dashboard', [
         'commentaires' => $commentaires,

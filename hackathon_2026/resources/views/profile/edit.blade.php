@@ -1,29 +1,29 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+@extends('layouts.base')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
-            </div>
+@section('title', 'Profile')
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
-            </div>
+@section('content')
+<div class="max-w-4xl mx-auto px-4">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Mon Profil</h1>
+        <p class="text-gray-600">Gérez vos informations personnelles</p>
+    </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
-            </div>
+    <div class="space-y-6">
+        <!-- Update Profile Information -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            @include('profile.partials.update-profile-information-form')
+        </div>
+
+        <!-- Update Password -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            @include('profile.partials.update-password-form')
+        </div>
+
+        <!-- Delete Account -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            @include('profile.partials.delete-user-form')
         </div>
     </div>
-</x-app-layout>
+</div>
+@endsection
