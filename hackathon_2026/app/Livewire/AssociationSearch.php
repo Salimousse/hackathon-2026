@@ -9,21 +9,78 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class AssociationSearch extends Component
 {
-    use WithPagination; // Permet la pagination sans rechargement
+    use WithPagination;
 
-    // Variables connectées au formulaire
+    /**
+     * Mot-clé de recherche (titre ou objet de l'association).
+     * 
+     * @var string
+     */
     public $query = '';
+
+    /**
+     * Nom de la ville pour filtrer les associations.
+     * 
+     * @var string
+     */
     public $ville = '';
+
+    /**
+     * Code postal pour filtrer les associations.
+     * 
+     * @var string
+     */
     public $cp = '';
+
+    /**
+     * Latitude pour la recherche géolocalisée.
+     * 
+     * @var string
+     */
     public $lat = '';
+
+    /**
+     * Longitude pour la recherche géolocalisée.
+     * 
+     * @var string
+     */
     public $lon = '';
 
-    // Remet la page à 1 dès qu'on tape une recherche
+    /**
+     * Réinitialise la pagination quand la recherche change.
+     *
+     * @return void
+     */
     public function updatedQuery() { $this->resetPage(); }
+
+    /**
+     * Réinitialise la pagination quand la ville change.
+     *
+     * @return void
+     */
     public function updatedVille() { $this->resetPage(); }
+
+    /**
+     * Réinitialise la pagination quand la latitude change.
+     *
+     * @return void
+     */
     public function updatedLat() { $this->resetPage(); }
+
+    /**
+     * Réinitialise la pagination quand la longitude change.
+     *
+     * @return void
+     */
     public function updatedLon() { $this->resetPage(); }
 
+    /**
+     * Réinitialise tous les filtres de recherche.
+     * 
+     * Efface tous les champs de recherche et réinitialise la pagination.
+     *
+     * @return void
+     */
     public function resetFilters()
     {
         $this->query = '';
@@ -34,6 +91,18 @@ class AssociationSearch extends Component
         $this->resetPage();
     }
 
+    /**
+     * Affiche les résultats de recherche d'associations.
+     * 
+     * Effectue une requête vers l'API Huwise avec les filtres appliqués :
+     * - Recherche par mot-clé (titre/objet)
+     * - Filtre par ville et code postal
+     * - Recherche géolocalisée dans un rayon de 20km
+     * 
+     * Retourne une vue avec les résultats paginés.
+     *
+     * @return \Illuminate\View\View Vue Livewire avec les associations trouvées
+     */
     public function render()
     {
         // 1. Préparation de la requête API

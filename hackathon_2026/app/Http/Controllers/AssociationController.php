@@ -9,10 +9,15 @@ use Illuminate\Support\Facades\Auth;
 
 class AssociationController extends Controller
 {
-
-
-
-    // fonction de recherche des associations
+    /**
+     * Recherche des associations via l'API Huwise.
+     * 
+     * Permet de rechercher par mot-clé (titre/objet), ville, code postal
+     * ou par géolocalisation (rayon de 20km).
+     *
+     * @param Request $request Paramètres : query, ville, cp, lat, lon, page
+     * @return \Illuminate\View\View Vue avec les résultats paginés
+     */
     public function search (Request $request)
     {
         $search = $request->input('query');
@@ -51,12 +56,20 @@ class AssociationController extends Controller
         $lon = $request->input('lon');
         
         if ($lat && $lon) {
-    // Sécurité : On s'assure que ce sont des points et non des virgules
-    // et on force le type float pour la sécurité 
-    $lat = number_format((float)$lat, 6, '.', '');
-    $lon = number_format((float)$lon, 6, '.', '');
-    $whereClauses[] = "distance(geo_point_2d, geom'POINT($lon $lat)', 20km)";
-}
+            // Sécurité : On s'assure que ce sont des points et non des virgules
+            // et on force le type float pour la sécurité 
+            $lat = number_format((float)$lat, 6, '.', '');
+            $lon = number_format((float)$lon, 6, '.', '');
+            
+            // Ajouter la distance comme champ sélectionné
+            $params['select'] = "*, distance(geo_point_2d, geom'POINT($lon $lat)', 20km) as distance_km";
+            
+            // Filtrer dans un rayon de 20km
+            $whereClauses[] = "distance(geo_point_2d, geom'POINT($lon $lat)', 20km)";
+            
+            // Trier par distance (du plus proche au plus loin)
+            $params['order_by'] = "distance(geo_point_2d, geom'POINT($lon $lat)') ASC";
+        }
 
 
 
@@ -92,8 +105,16 @@ class AssociationController extends Controller
         return view('recherche_associations', ['results' => $paginator, 'query' => $search]);
     }
 
-
-    // afficher les infos d'une association
+    /**
+     * Affiche les détails complets d'une association.
+     * 
+     * Récupère les données de l'association depuis l'API,
+     * les commentaires/avis et vérifie le statut de l'utilisateur
+     * (membre, déjà commenté).
+     *
+     * @param string $id Identifiant unique de l'association
+     * @return \Illuminate\View\View Vue avec les détails de l'association
+     */
     public function show($id)
     {
         $endpoint = "https://hub.huwise.com/api/explore/v2.1/catalog/datasets/ref-france-association-repertoire-national/records";
@@ -150,21 +171,40 @@ class AssociationController extends Controller
         ]);
     }
 
-
+    /**
+     * Liste les associations avec pagination.
+     * 
+     * Alias de la méthode search pour la pagination.
+     *
+     * @param Request $request Paramètres de recherche et pagination
+     * @return \Illuminate\View\View Vue avec les résultats paginés
+     */
     public function list(Request $request)
     {
         //fonction pour pagination 
         return $this->search($request);
     }
 
-
+    /**
+     * Réinitialise tous les filtres de recherche.
+     *
+     * @return \Illuminate\Http\RedirectResponse Redirection vers la page de recherche vierge
+     */
     public function reinitialiserFiltres()
     {
         // Rediriger vers la page de recherche sans paramètres
         return redirect()->route('recherche.associations');
     }
 
-    // Ajouter un commentaire
+    /**
+     * Ajoute un commentaire/avis pour une association.
+     * 
+     * Vérifie que l'utilisateur n'a pas déjà commenté cette association
+     * (limitation : 1 avis par utilisateur et par association).
+     *
+     * @param Request $request Données : idAssociation, noteAssociation (1-5), descCommentaire
+     * @return \Illuminate\Http\RedirectResponse Redirection avec message de succès ou erreur
+     */
     public function ajouterCommentaire(Request $request)
     {
         $request->validate([
@@ -192,7 +232,14 @@ class AssociationController extends Controller
         return back()->with('success', 'Votre avis a été ajouté avec succès!');
     }
 
-    // Supprimer un commentaire
+    /**
+     * Supprime un commentaire de l'utilisateur.
+     * 
+     * Seul l'auteur du commentaire peut le supprimer.
+     *
+     * @param int $id ID du commentaire à supprimer
+     * @return \Illuminate\Http\RedirectResponse Redirection avec message de succès ou erreur
+     */
     public function supprimerCommentaire($id)
     {
         $commentaire = Commentaire::findOrFail($id);
@@ -206,7 +253,14 @@ class AssociationController extends Controller
         return back()->with('success', 'Votre avis a été supprimé.');
     }
     
-    // Rejoindre une association
+    /**
+     * Permet à l'utilisateur de rejoindre une association.
+     * 
+     * Crée une adhésion avec le statut 'accepted' directement.
+     *
+     * @param string $id ID de l'association à rejoindre
+     * @return \Illuminate\Http\RedirectResponse Redirection avec message de succès ou erreur
+     */
     public function rejoindre($id)
     {
         // Vérifier si l'utilisateur est déjà membre
@@ -230,7 +284,14 @@ class AssociationController extends Controller
         return back()->with('success', 'Vous avez rejoint l\'association avec succès!');
     }
     
-    // Quitter une association
+    /**
+     * Permet à l'utilisateur de quitter une association.
+     * 
+     * Supprime l'adhésion de l'utilisateur.
+     *
+     * @param string $id ID de l'association à quitter
+     * @return \Illuminate\Http\RedirectResponse Redirection avec message de succès ou erreur
+     */
     public function quitter($id)
     {
         $adhesion = MembreAsso::where('user_id', Auth::id())

@@ -1,5 +1,7 @@
 @extends('layouts.base') @section('title', 'Bienvenue') @section('content')
+
 <div class="title m-b-md">Constellation</div>
+<div class="text-xl text-gray-700 mb-8" style="font-family: 'Raleway', sans-serif; font-weight: 400;">Votre réseau associatif local</div>
 
 <div class="max-w-4xl mx-auto w-full px-4">
     <form action="{{ route('recherche.associations') }}" method="GET" class="mb-8 bg-white p-6 rounded shadow-lg border-2 border-gray-200">
@@ -117,9 +119,9 @@ function getGeolocation() {
             alert(errorMsg);
         },
         {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
+            enableHighAccuracy: false,  // Plus rapide, moins précis mais suffisant
+            timeout: 30000,              // 30 secondes au lieu de 10
+            maximumAge: 300000           // Accepte une position de moins de 5 min
         }
     );
 }

@@ -55,6 +55,16 @@
       .title {
         font-size: 84px;
       }
+      .logo-title {
+        font-size: 48px;
+        font-weight: bold;
+        color: #000;
+        text-decoration: none;
+        transition: color 0.3s;
+      }
+      .logo-title:hover {
+        color: #4a5568;
+      }
       .links > a {
         color: black;
         padding: 0 25px;
@@ -74,7 +84,7 @@
       @if (Route::has('login'))
       <div class="top-right links">
         @auth
-        <a href="{{ route('dashboard') }}">Dashboard</a>
+        <a href="{{ route('dashboard') }}">Tableau de bord</a>
         <div class="inline-block relative group">
           <button class="inline-flex items-center">
             <span>{{ Auth::user()->name }}</span>
@@ -83,16 +93,16 @@
             </svg>
           </button>
           <div class="hidden group-hover:block absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil</a>
             <form method="POST" action="{{ route('logout') }}">
               @csrf
-              <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
+              <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Déconnexion</button>
             </form>
           </div>
         </div>
         @else
-        <a href="{{ route('login') }}">Login</a>
-        <a href="{{ route('register') }}">Register</a>
+        <a href="{{ route('login') }}">Connexion</a>
+        <a href="{{ route('register') }}">Inscription</a>
         @endauth
       </div>
       @endif

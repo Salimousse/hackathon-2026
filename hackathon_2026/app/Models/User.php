@@ -47,7 +47,9 @@ class User extends Authenticatable
     }
     
     /**
-     * Relation avec les associations rejointes
+     * Relation : Associations que l'utilisateur a rejointes.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function associations()
     {
@@ -55,7 +57,12 @@ class User extends Authenticatable
     }
     
     /**
-     * Vérifier si l'utilisateur est membre d'une association
+     * Vérifie si l'utilisateur est membre d'une association spécifique.
+     * 
+     * Vérifie que le statut de l'adhésion est 'accepted'.
+     *
+     * @param string $associationId ID de l'association
+     * @return bool True si membre, false sinon
      */
     public function isMemberOf($associationId)
     {
@@ -66,7 +73,9 @@ class User extends Authenticatable
     }
     
     /**
-     * Obtenir les associations acceptées uniquement
+     * Récupère uniquement les associations avec statut accepté.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function associationsAcceptees()
     {

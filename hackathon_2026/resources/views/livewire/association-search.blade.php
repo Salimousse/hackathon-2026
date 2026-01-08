@@ -1,5 +1,5 @@
 <div>
-    <div class="mb-8 bg-white p-6 rounded shadow-sm">
+    <div class="mb-8 bg-gray-100 p-6 shadow-md border-2 border-gray-300">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="md:col-span-4">
                 <label class="block text-sm font-bold mb-1 text-gray-700" for="query">Recherche</label>
@@ -7,7 +7,7 @@
                     type="text" 
                     wire:model.live.debounce.500ms="query"
                     placeholder="Rechercher une assocaiation ..." 
-                    class="w-full p-3 rounded border border-black-300 shadow-sm focus:ring-2 focus:ring-blue-500"
+                    class="w-full p-3 border-2 border-gray-300 bg-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:border-gray-400"
                 >
             </div>
           <!--Ajout de filtre par ville et code postal  -->
@@ -17,7 +17,7 @@
                     type="text" 
                     wire:model.live.debounce.500ms="ville"
                     placeholder="Ex: Paris" 
-                    class="w-full p-3 rounded border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500"
+                    class="w-full p-3 border-2 border-gray-300 bg-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:border-gray-400"
                 >
             </div>
 
@@ -27,7 +27,7 @@
                     type="text" 
                     wire:model.live.debounce.500ms="cp"
                     placeholder="Ex: 75001" 
-                    class="w-full p-3 rounded border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500"
+                    class="w-full p-3 border-2 border-gray-300 bg-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:border-gray-400"
                 >
             </div>
 
@@ -35,7 +35,7 @@
                 <button 
                     type="button"
                     wire:click="$refresh"
-                    class="w-full bg-black text-white px-6 py-3 rounded hover:bg-gray-800 font-bold transition">
+                    class="w-full bg-black text-white px-6 py-3 hover:bg-gray-800 font-bold transition">
                     Rechercher
                 </button>
             </div>
@@ -64,14 +64,26 @@
                 <a href="{{ route('association.show', $id) }}" class="block no-underline">
                 @endif
                     <div class="bg-white p-5 rounded shadow hover:shadow-md transition cursor-pointer hover:bg-blue-50">
-                        <h2 class="text-xl font-bold text-black">{{ $asso['title'] ?? 'Nom inconnu' }}</h2>
-                        <p class="text-black text-sm mb-2">
-                            {{ $asso['com_name_asso'] ?? 'Adresse non renseignée' }} 
-                            ({{ $asso['pc_address_asso'] ?? 'CP' }})
-                        </p>
-                        <p class="text-black italic">
-                            {{ Str::limit($asso['object'] ?? 'Pas de description', 150) }}
-                        </p>
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <h2 class="text-xl font-bold text-black">{{ $asso['title'] ?? 'Nom inconnu' }}</h2>
+                                <p class="text-black text-sm mb-2">
+                                    {{ $asso['com_name_asso'] ?? 'Adresse non renseignée' }} 
+                                    ({{ $asso['pc_address_asso'] ?? 'CP' }})
+                                </p>
+                                <p class="text-black italic">
+                                    {{ Str::limit($asso['object'] ?? 'Pas de description', 150) }}
+                                </p>
+                            </div>
+                            @if(isset($asso['distance_km']))
+                                <div class="ml-4 flex-shrink-0">
+                                    <div class="bg-blue-100 text-blue-800 px-3 py-2 rounded-lg text-center">
+                                        <div class="text-2xl font-bold">{{ number_format($asso['distance_km'], 1) }}</div>
+                                        <div class="text-xs">km</div>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 @if($id)
                 </a>
