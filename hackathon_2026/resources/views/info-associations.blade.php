@@ -22,7 +22,36 @@
 
         <!-- Vérification si l'association existe -->
         @if($association)
-            <h1 class="text-3xl font-bold text-black-600 mb-4">{{ $association['title'] ?? 'Nom inconnu' }}</h1>
+            <div class="flex justify-between items-start mb-4">
+                <h1 class="text-3xl font-bold text-black-600">{{ $association['title'] ?? 'Nom inconnu' }}</h1>
+                
+                @auth
+                    @if($estMembre)
+                        <form method="POST" action="{{ route('association.quitter', $association['id']) }}">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded transition">
+                                Quitter l'association
+                            </button>
+                        </form>
+                    @elseif($adhesion && $adhesion->status === 'pending')
+                        <button disabled class="bg-gray-400 text-white font-bold py-2 px-6 rounded cursor-not-allowed">
+                            Demande en attente
+                        </button>
+                    @else
+                        <form method="POST" action="{{ route('association.rejoindre', $association['id']) }}">
+                            @csrf
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded transition">
+                                Rejoindre l'association
+                            </button>
+                        </form>
+                    @endif
+                @else
+                    <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded transition">
+                        Connexion pour rejoindre
+                    </a>
+                @endauth
+            </div>
             
             <div class="mb-6 p-4 bg-gray-50 rounded-lg border-l-4 border-black-500">
                 <h3 class="font-bold text-lg mb-2 text-gray-800">Objet de l'association</h3>
@@ -59,6 +88,111 @@
                 <div id="map" class="h-64 md:h-96 w-full rounded-lg shadow border z-0"></div>
             </div>
             @endif
+
+            <!-- Section Commentaires -->
+            <div class="mt-8">
+                <h3 class="font-bold text-2xl mb-4 border-b-2 pb-2">Avis ({{ $commentaires->count() }})</h3>
+                
+                @if($moyenneNote)
+                    <div class="mb-4 flex items-center">
+                        <span class="text-3xl font-bold text-yellow-500">{{ number_format($moyenneNote, 1) }}</span>
+                        <span class="ml-2 text-gray-600">/ 5</span>
+                        <span class="ml-4 text-gray-500">({{ $commentaires->count() }} avis)</span>
+                    </div>
+                @endif
+
+                <!-- Messages de succès/erreur -->
+                @if(session('success'))
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                <!-- Formulaire d'ajout d'avis -->
+                @auth
+                    @if(!$aDejaCommente)
+                        <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+                            <h4 class="font-bold mb-3">Laisser un avis</h4>
+                            <form action="{{ route('commentaire.ajouter') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="idAssociation" value="{{ $association['id'] }}">
+                                
+                                <div class="mb-3">
+                                    <label class="block text-sm font-medium mb-1">Note</label>
+                                    <select name="noteAssociation" required class="w-full p-2 border rounded">
+                                        <option value="">Choisir une note</option>
+                                        <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                                        <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                                        <option value="3">⭐⭐⭐ (3/5)</option>
+                                        <option value="2">⭐⭐ (2/5)</option>
+                                        <option value="1">⭐ (1/5)</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="block text-sm font-medium mb-1">Votre avis</label>
+                                    <textarea name="descCommentaire" required maxlength="500" rows="4" 
+                                        class="w-full p-2 border rounded" 
+                                        placeholder="Partagez votre expérience..."></textarea>
+                                </div>
+
+                                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                    Publier mon avis
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        <div class="mb-6 p-4 bg-gray-100 rounded-lg text-gray-600">
+                            Vous avez déjà laissé un avis pour cette association.
+                        </div>
+                    @endif
+                @else
+                    <div class="mb-6 p-4 bg-gray-100 rounded-lg">
+                        <a href="{{ route('login') }}" class="text-blue-600 hover:underline">Connectez-vous</a> pour laisser un avis.
+                    </div>
+                @endauth
+
+                <!-- Liste des commentaires -->
+                @if($commentaires->count() > 0)
+                    <div class="space-y-4">
+                        @foreach($commentaires as $commentaire)
+                            <div class="border rounded-lg p-4 bg-white shadow-sm">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <span class="font-semibold">{{ $commentaire->user->name }}</span>
+                                        <span class="text-yellow-500 ml-2">
+                                            @for($i = 0; $i < $commentaire->noteAssociation; $i++)
+                                                ⭐
+                                            @endfor
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        @auth
+                                            @if($commentaire->idUser === Auth::id())
+                                                <form action="{{ route('commentaire.supprimer', $commentaire->idCommentaire) }}" method="POST" 
+                                                    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet avis ?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 text-sm hover:underline">Supprimer</button>
+                                                </form>
+                                            @endif
+                                        @endauth
+                                    </div>
+                                </div>
+                                <p class="text-gray-700">{{ $commentaire->descCommentaire }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-gray-500 italic">Aucun avis pour le moment. Soyez le premier à donner votre avis !</p>
+                @endif
+            </div>
 
         @else
             <div class="text-center py-10">

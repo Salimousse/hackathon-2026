@@ -24,7 +24,7 @@
     <style>
       html,
       body {
-        background-color: #fff;
+        background-color: #f3f4f6;
         color: #000;
         font-family: "Raleway", sans-serif;
         font-weight: 400;
@@ -32,12 +32,14 @@
         margin: 0;
       }
       .full-height {
-        height: 100vh;
+        min-height: 100vh;
       }
       .flex-center {
-        align-items: center;
+        /* align-items: center; Remove vertical centering to prevent clipping on small screens */
         display: flex;
         justify-content: center;
+        padding: 40px 20px; /* Add top/bottom padding */
+        box-sizing: border-box;
       }
       .position-ref {
         position: relative;
@@ -72,7 +74,7 @@
       @if (Route::has('login'))
       <div class="top-right links">
         @auth
-        <a href="{{ url('/home') }}">Home</a>
+        <a href="{{ route('dashboard') }}">Dashboard</a>
         <span>{{ Auth::user()->name }}</span>
         @else
         <a href="{{ route('login') }}">Login</a>

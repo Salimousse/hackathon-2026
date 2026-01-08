@@ -43,7 +43,7 @@
 
         <button 
             type="button"
-            wire:click="$set('query', ''); $set('ville', ''); $set('cp', ''); $set('lat', ''); $set('lon', '')"
+            wire:click="resetFilters"
             class="mt-4 text-sm text-gray-500 underline ml-4">
             Réinitialiser les filtres
         </button>

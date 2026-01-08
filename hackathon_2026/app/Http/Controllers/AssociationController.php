@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Commentaire;
+use App\Models\MembreAsso;
+use Illuminate\Support\Facades\Auth;
 
 class AssociationController extends Controller
 {
@@ -110,7 +113,41 @@ class AssociationController extends Controller
             $association = $data['results'][0] ?? null;
         }
 
-        return view('info-associations', ['association' => $association]);
+        // Récupérer les commentaires
+        $commentaires = Commentaire::where('idAssociation', $id)
+            ->with('user')
+            ->orderBy('idCommentaire', 'desc')
+            ->get();
+
+        // Calculer la moyenne des notes
+        $moyenneNote = Commentaire::where('idAssociation', $id)->avg('noteAssociation');
+        
+        // Vérifier si l'utilisateur a déjà commenté
+        $aDejaCommente = false;
+        if (Auth::check()) {
+            $aDejaCommente = Commentaire::where('idUser', Auth::id())
+                ->where('idAssociation', $id)
+                ->exists();
+        }
+        
+        // Vérifier si l'utilisateur est membre de cette association
+        $estMembre = false;
+        $adhesion = null;
+        if (Auth::check()) {
+            $adhesion = MembreAsso::where('user_id', Auth::id())
+                ->where('association_id', $id)
+                ->first();
+            $estMembre = $adhesion && $adhesion->status === 'accepted';
+        }
+
+        return view('info-associations', [
+            'association' => $association,
+            'commentaires' => $commentaires,
+            'moyenneNote' => $moyenneNote,
+            'aDejaCommente' => $aDejaCommente,
+            'estMembre' => $estMembre,
+            'adhesion' => $adhesion
+        ]);
     }
 
 
@@ -127,9 +164,85 @@ class AssociationController extends Controller
         return redirect()->route('recherche.associations');
     }
 
+    // Ajouter un commentaire
+    public function ajouterCommentaire(Request $request)
+    {
+        $request->validate([
+            'idAssociation' => 'required|string',
+            'noteAssociation' => 'required|integer|min:1|max:5',
+            'descCommentaire' => 'required|string|max:500'
+        ]);
+
+        // Vérifier si l'utilisateur a déjà commenté
+        $existe = Commentaire::where('idUser', Auth::id())
+            ->where('idAssociation', $request->idAssociation)
+            ->exists();
+
+        if ($existe) {
+            return back()->with('error', 'Vous avez déjà laissé un avis pour cette association.');
+        }
+
+        Commentaire::create([
+            'idUser' => Auth::id(),
+            'idAssociation' => $request->idAssociation,
+            'noteAssociation' => $request->noteAssociation,
+            'descCommentaire' => $request->descCommentaire
+        ]);
+
+        return back()->with('success', 'Votre avis a été ajouté avec succès!');
+    }
+
+    // Supprimer un commentaire
+    public function supprimerCommentaire($id)
+    {
+        $commentaire = Commentaire::findOrFail($id);
+
+        if ($commentaire->idUser !== Auth::id()) {
+            return back()->with('error', 'Vous ne pouvez pas supprimer cet avis.');
+        }
+
+        $commentaire->delete();
+
+        return back()->with('success', 'Votre avis a été supprimé.');
+    }
     
+    // Rejoindre une association
+    public function rejoindre($id)
+    {
+        // Vérifier si l'utilisateur est déjà membre
+        $existe = MembreAsso::where('user_id', Auth::id())
+            ->where('association_id', $id)
+            ->exists();
 
+        if ($existe) {
+            return back()->with('error', 'Vous avez déjà demandé à rejoindre cette association.');
+        }
 
+        MembreAsso::create([
+            'user_id' => Auth::id(),
+            'association_id' => $id,
+            'role' => 'membre',
+            'status' => 'accepted' // Acceptation automatique pour le moment
+        ]);
+
+        return back()->with('success', 'Vous avez rejoint l\'association avec succès!');
+    }
+    
+    // Quitter une association
+    public function quitter($id)
+    {
+        $adhesion = MembreAsso::where('user_id', Auth::id())
+            ->where('association_id', $id)
+            ->first();
+
+        if (!$adhesion) {
+            return back()->with('error', 'Vous n\'êtes pas membre de cette association.');
+        }
+
+        $adhesion->delete();
+
+        return back()->with('success', 'Vous avez quitté l\'association.');
+    }
 }
 
 

@@ -24,6 +24,16 @@ class AssociationSearch extends Component
     public function updatedLat() { $this->resetPage(); }
     public function updatedLon() { $this->resetPage(); }
 
+    public function resetFilters()
+    {
+        $this->query = '';
+        $this->ville = '';
+        $this->cp = '';
+        $this->lat = '';
+        $this->lon = '';
+        $this->resetPage();
+    }
+
     public function render()
     {
         // 1. Préparation de la requête API

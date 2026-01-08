@@ -45,4 +45,31 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    
+    /**
+     * Relation avec les associations rejointes
+     */
+    public function associations()
+    {
+        return $this->hasMany(MembreAsso::class);
+    }
+    
+    /**
+     * Vérifier si l'utilisateur est membre d'une association
+     */
+    public function isMemberOf($associationId)
+    {
+        return $this->associations()
+            ->where('association_id', $associationId)
+            ->where('status', 'accepted')
+            ->exists();
+    }
+    
+    /**
+     * Obtenir les associations acceptées uniquement
+     */
+    public function associationsAcceptees()
+    {
+        return $this->associations()->where('status', 'accepted');
+    }
 }
