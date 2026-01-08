@@ -1,14 +1,14 @@
-# Hackathon 2026 - Plateforme de Recherche d'Associations
+# Hackathon 2026 : Constellation - Plateforme de Recherche d'Associations
 
-Application web permettant de rechercher, consulter et évaluer des associations en France. Le projet utilise l'API du Répertoire National des Associations pour fournir des informations actualisées.
+Annuaire social permettant de rechercher, consulter et évaluer des associations en France. Le projet utilise l'API du Répertoire National des Associations pour fournir des informations actualisées et permet de rejoindre facilement les associations de votre choix.
 
 ## 📋 Fonctionnalités
 
-- Rechercher des associations par nom, ville ou code postal
+- Recherche dynamique en temps réel d'associations par nom, ville ou code postal
 - Localiser les associations via géolocalisation
 - Consulter les détails complets des associations (adresse, contact, description)
 - Ajouter et consulter des avis/commentaires sur les associations
-- S'inscrire comme membre d'une association
+- Rejoindre une association en s'inscrivant comme membre
 
 ## 🛠️ Technologies utilisées
 
@@ -27,7 +27,8 @@ Application web permettant de rechercher, consulter et évaluer des associations
 
 ### APIs externes
 - **API Huwise** - Répertoire National des Associations
-- **OpenStreetMap** - Cartographie
+- **Geolocation API** - Localisation automatique de l'utilisateur via le navigateur
+- **OpenStreetMap** - Cartographie et affichage de cartes
 
 ## 🚀 Installation
 
@@ -93,3 +94,12 @@ php artisan serve
 ```
 
 L'application sera accessible à : `http://localhost:8000`
+
+**8. Tester les fonctionnalités**
+
+Accédez à l'application et explorez les fonctionnalités :
+- Recherche d'associations en temps réel
+- Géolocalisation automatique
+- Consultation des détails et avis
+- Inscription et connexion utilisateur
+- Ajout de commentaires et adhésion aux associations
