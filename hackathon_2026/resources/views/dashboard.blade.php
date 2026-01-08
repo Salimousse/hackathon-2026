@@ -51,8 +51,17 @@
                         <div class="flex justify-between items-start mb-2">
                             <div class="flex-1">
                                 <span class="font-semibold text-gray-900 block mb-1">
-                                    Association #{{ $adhesion->association_id }}
+                                    @if($info && isset($info['title']))
+                                        {{ $info['title'] }}
+                                    @else
+                                        Association #{{ $adhesion->association_id }}
+                                    @endif
                                 </span>
+                                @if($info && isset($info['com_name_asso']))
+                                    <p class="text-xs text-gray-600 mb-2">
+                                        {{ $info['com_name_asso'] }} ({{ $info['pc_address_asso'] ?? '' }})
+                                    </p>
+                                @endif
                                 <div class="flex gap-2 items-center">
                                     <span class="text-xs px-2 py-1 rounded
                                         @if($adhesion->status === 'accepted') bg-green-100 text-green-800

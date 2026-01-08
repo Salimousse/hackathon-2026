@@ -85,14 +85,17 @@
       <div class="top-right links">
         @auth
         <a href="{{ route('dashboard') }}">Tableau de bord</a>
-        <div class="inline-block relative group">
-          <button class="inline-flex items-center">
+        <div class="inline-block relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+          <button class="inline-flex items-center" @click="open = !open">
             <span>{{ Auth::user()->name }}</span>
             <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
           </button>
-          <div class="hidden group-hover:block absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+          <div x-show="open" 
+               x-transition
+               class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+               style="display: none;">
             <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil</a>
             <form method="POST" action="{{ route('logout') }}">
               @csrf

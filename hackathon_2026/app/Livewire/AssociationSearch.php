@@ -47,6 +47,20 @@ class AssociationSearch extends Component
     public $lon = '';
 
     /**
+     * Initialise le composant avec les paramètres de l'URL.
+     *
+     * @return void
+     */
+    public function mount()
+    {
+        $this->query = request('query', '');
+        $this->ville = request('ville', '');
+        $this->cp = request('cp', '');
+        $this->lat = request('lat', '');
+        $this->lon = request('lon', '');
+    }
+
+    /**
      * Réinitialise la pagination quand la recherche change.
      *
      * @return void

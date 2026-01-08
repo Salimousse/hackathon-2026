@@ -61,9 +61,6 @@ class AssociationController extends Controller
             $lat = number_format((float)$lat, 6, '.', '');
             $lon = number_format((float)$lon, 6, '.', '');
             
-            // Ajouter la distance comme champ sélectionné
-            $params['select'] = "*, distance(geo_point_2d, geom'POINT($lon $lat)', 20km) as distance_km";
-            
             // Filtrer dans un rayon de 20km
             $whereClauses[] = "distance(geo_point_2d, geom'POINT($lon $lat)', 20km)";
             
